@@ -73,7 +73,7 @@ export default function Sidemenu({ open, toggleDrawer }) {
           <ListItemIcon>
             <BookIcon/>
           </ListItemIcon>
-          <ListItemText primary="Cardex"/>
+          <ListItemText primary="Kardex"/>
         </ListItemButton>
 
           <Divider />

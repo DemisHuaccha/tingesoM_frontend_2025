@@ -40,7 +40,7 @@ export const CardexListComponent = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center">Cardex</h2>
+      <h2 className="text-center">Kardex</h2>
 
       <form className="row g-3 mb-4" onSubmit={handleFilter}>
         <div className="col-md-4">
