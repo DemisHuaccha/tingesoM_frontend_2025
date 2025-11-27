@@ -18,9 +18,7 @@ pipeline {
             steps {
                 script {
                     runCmd("""
-                        cd monolitic-front
-                        npm install
-                        npm run build
+                        cd monolitic-front && npm install && npm run build
                     """)
                 }
             }
