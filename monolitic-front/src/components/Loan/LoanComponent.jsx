@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createLoan } from '../../services/LoanService';
+import { searchCustomerRuts } from '../../services/CustomerService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useKeycloak } from '@react-keycloak/web';
@@ -13,6 +14,27 @@ const LoanComponent = () => {
   const { keycloak } = useKeycloak();
   const userEmail = keycloak?.tokenParsed?.email || '';
   const { idTool } = useParams();
+  const [suggestions, setSuggestions] = useState([]);
+
+  const handleRutChange = async (e) => {
+  const value = e.target.value;
+  setRutClient(value);
+
+  if (value.length > 1) {
+    try {
+      const response = await searchCustomerRuts(value);
+      //console.log("Sugerencias recibidas:", response.data);
+
+      const data = Array.isArray(response.data) ? response.data : [];
+      setSuggestions(data);
+    } catch (error) {
+      console.error("Error with RUTs:", error);
+      setSuggestions([]);
+    }
+  } else {
+    setSuggestions([]);
+  }
+};
 
   
 
@@ -57,9 +79,26 @@ const LoanComponent = () => {
                   placeholder='Enter Client Rut'
                   value={rutClient}
                   className='form-control'
-                  onChange={(e) => setRutClient(e.target.value)}
+                  onChange={handleRutChange}
                   required
                 />
+                {suggestions.length > 0 && (
+                  <ul className="list-group mt-1">
+                    {suggestions.map((rut, index) => (
+                      <li
+                        key={index}
+                        className="list-group-item list-group-item-action"
+                        onClick={() => {
+                          setRutClient(rut);
+                          setSuggestions([]);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {rut}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div className='form-group mb-3'>

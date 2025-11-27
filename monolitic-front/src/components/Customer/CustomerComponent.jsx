@@ -37,10 +37,8 @@ const formatRut = (value) => {
 
   // Limitar a máximo 9 caracteres (8 números + 1 DV)
   const limited = clean.slice(0, 9);
-
   const body = limited.slice(0, -1);
   const dv = limited.slice(-1);
-
   const reversed = body.split('').reverse();
   const withDots = reversed.reduce((acc, digit, i) => {
     acc.unshift(digit);
@@ -58,9 +56,9 @@ const formatRut = (value) => {
 
     if (name === "phone") {
       const digits = value.replace(/\D/g, "");
-      const clean = digits.startsWith("56") ? digits.slice(2) : digits;
-      const limited = clean.slice(0, 9);
-      const formatted = "+56" + limited;
+      const clean = digits.startsWith("569") ? digits.slice(3) : digits;
+      const limited = clean.slice(0, 8);
+      const formatted = "+569" + limited;
       setPhone(formatted);
     } 
   };
@@ -108,17 +106,20 @@ const formatRut = (value) => {
               </div>
               <div className='form-group mb-2'>
                 <label className='form-label'>Client Gmail</label>
-                <div className='input-group'>
+                  <div className='input-group'>
                     <input type='text' placeholder='Enter Gmail username'
-                    name='emailC' value={emailC} className='form-control'
-                    onChange={(e) => setEmailC(e.target.value.replace(/[^a-zA-Z0-9._-]/g, ''))}
-                    />
+                      name='emailC' value={emailC} className='form-control'
+                      onChange={(e) => setEmailC(e.target.value.replace(/[^a-zA-Z0-9._-]/g, ''))}
+                      />
                     <span className='input-group-text'>@gmail.com</span>
-                    </div>
-                    </div>
+                  </div>
+                </div>
                 <div className="form-group">
                     <label>Phone:</label>
-                    <input type="text" name="phone" value={phone || ""} onChange={handleChange} className="form-control" />
+                    <input type="text" 
+                           name="phone" 
+                           placeholder='+569'
+                           value={phone || ""} onChange={handleChange} className="form-control" />
                 </div>
               <button className='btn btn-success' onClick={saveCustomer}>Submit</button>
             </form>

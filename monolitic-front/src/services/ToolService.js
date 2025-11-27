@@ -1,7 +1,7 @@
 import axios from "axios";
 const apiBase = import.meta.env.VITE_API_BASE_URL;
 
-export const listTool = () => axios.get(apiBase+"/tool/getAllNotDelete");
+export const listTool = () => axios.get(apiBase+"/tool/getAll");
 
 export const getToolById = (idTool) => axios.get(`${apiBase}/tool/${idTool}`);
 
@@ -13,5 +13,6 @@ export function updateStatusTool(toolStatus) { return axios.put(`${apiBase}/tool
 export function deleteTool(toolStatus) { return axios.put(`${apiBase}/tool/deleteTool`, toolStatus);}
 
 export const filterTool = (filterDto) => axios.post(`${apiBase}/tool/filter`, filterDto);
+export const gruopTools = () => axios.get(`${apiBase}/tool/getGroup`);
 
 export const rankingTools = () => axios.get(`${apiBase}/tool/ranking`);

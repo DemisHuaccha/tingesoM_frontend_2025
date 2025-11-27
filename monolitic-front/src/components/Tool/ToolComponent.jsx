@@ -12,6 +12,7 @@ const ToolComponent = () => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [replacementValue, setReplacementValue] = useState('');
+  const [damageValue, setDamageValue] = useState('');
   const [loanFee, setLoanFee] = useState('');
   const [penaltyForDelay, setPenaltyForDelay] = useState('');
   const [initialCondition, setInitialCondition] = useState('');
@@ -39,6 +40,7 @@ const ToolComponent = () => {
       name,
       category,
       replacementValue: parseInt(replacementValue),
+      damageValue: parseInt(damageValue),
       loanFee: parseInt(loanFee),
       penaltyForDelay: parseInt(penaltyForDelay),
       initialCondition,
@@ -46,6 +48,11 @@ const ToolComponent = () => {
       email
     };
 
+    if (!Number.isInteger(parseInt(replacementValue, damageValue, loanFee, penaltyForDelay, quantity)) || parseInt(replacementValue, damageValue, loanFee, penaltyForDelay, quantity) <= 0) 
+      {alert('Positive Numbers only.');
+        return;}
+
+    //console.log(tool);
     createTool(tool)
       .then((response) => {
         //console.log(response.data);
@@ -91,10 +98,27 @@ const ToolComponent = () => {
                 <label className='form-label'>Replacement Value</label>
                 <input
                   type='number'
+                  min='0'
                   placeholder='Enter Replacement Value'
                   value={replacementValue}
                   className='form-control'
-                  onChange={(e) => setReplacementValue(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {setReplacementValue(value);}}}
+                />
+              </div>
+
+              <div className='form-group mb-2'>
+                <label className='form-label'>Damage Value</label>
+                <input
+                  type='number'
+                  min='0'
+                  placeholder='Enter Damage Value'
+                  value={damageValue}
+                  className='form-control'
+                  onChange={(e) => {    
+                    const value = parseInt(e.target.value);
+                    if (value > 0 || e.target.value === '') setDamageValue(e.target.value);}}
                 />
               </div>
 
@@ -102,10 +126,13 @@ const ToolComponent = () => {
                 <label className='form-label'>Loan Fee</label>
                 <input
                   type='number'
+                  min='0'
                   placeholder='Enter Loan Fee'
                   value={loanFee}
                   className='form-control'
-                  onChange={(e) => setLoanFee(e.target.value)}
+                  onChange={(e) => {    
+                    const value = parseInt(e.target.value);
+                    if (value > 0 || e.target.value === '') setLoanFee(e.target.value);}}
                 />
               </div>
 
@@ -113,10 +140,13 @@ const ToolComponent = () => {
                 <label className='form-label'>Penalty for Delay</label>
                 <input
                   type='number'
+                  min='0'
                   placeholder='Enter Penalty for Delay'
                   value={penaltyForDelay}
                   className='form-control'
-                  onChange={(e) => setPenaltyForDelay(e.target.value)}
+                  onChange={(e) => {    
+                    const value = parseInt(e.target.value);
+                    if (value > 0 || e.target.value === '') setPenaltyForDelay(e.target.value);}}
                 />
               </div>
 
@@ -140,10 +170,13 @@ const ToolComponent = () => {
                 <label className='form-label'>Quantity</label>
                 <input
                   type='number'
+                  min='0' 
                   placeholder='Enter Quantity'
                   value={quantity}
                   className='form-control'
-                  onChange={(e) => setQuantity(e.target.value)}
+                  onChange={(e) => {    
+                    const value = parseInt(e.target.value);
+                    if (value > 0 || e.target.value === '') setQuantity(e.target.value);}}
                 />
               </div>
 

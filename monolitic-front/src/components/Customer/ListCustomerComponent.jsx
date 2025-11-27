@@ -1,33 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom'
-import { listCustomer, updateStatusCustomer } from "../../services/CustomerService";
+import { listCustomer, updateStatusCustomer, getDelayedClients } from "../../services/CustomerService";
 
 
 export const ListCustomerComponent = () => {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDelayed, setShowDelayed] = useState(false);
   const itemsPerPage = 10;
   
 
   const navigator = useNavigate();
 
   useEffect(() => {
-    loadCustomers()}, []);
+    loadCustomers()}, [showDelayed]);
 
   
     function addNewCustomer(){
       navigator('/add-Customer')
     }
 
-    function loadCustomers() {
-      listCustomer()
-      .then((response) => {
-        setCustomers(response.data);
-      })
-      .catch((error) => {
-        console.error("Error al cargar clientes:", error);
-      });
-    }
+function loadCustomers() {
+  const service = showDelayed ? getDelayedClients : listCustomer;
+  service()
+    .then((response) => {
+      setCustomers(response.data);
+      setCurrentPage(1);
+    })
+    .catch((error) => {
+      console.error("Error al cargar clientes:", error);
+    });
+}
 
     function UpdateStatusCustomer(idCustomer) {
       updateStatusCustomer(idCustomer)
@@ -48,9 +51,20 @@ export const ListCustomerComponent = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center"> List of Client</h2>
+      <h2 className="text-center">
+        {showDelayed ? "Delayed Clients" : "List of Clients"}
+      </h2>
+
       <div style={{ textAlign: 'left', marginBottom: '10px' }}>
-      <button className='btn btn-primary' onClick={addNewCustomer}>Add Client</button>
+        <button className='btn btn-primary me-2' onClick={addNewCustomer}>
+          Add Client
+        </button>
+        <button
+          className='btn btn-info'
+          onClick={() => setShowDelayed(prev => !prev)} // 👈 alterna entre listas
+        >
+          {showDelayed ? "Show All Clients" : "Show Delayed Clients"}
+        </button>
       </div>
       <table className="table table-striped table-bordered">
         <thead>

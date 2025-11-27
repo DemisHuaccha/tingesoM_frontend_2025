@@ -57,6 +57,7 @@ export const UpdateTool = () => {
           { label: "Name", name: "name", type: "text" },
           { label: "Category", name: "category", type: "text" },
           { label: "Replacement Value", name: "replacementValue", type: "number" },
+          { label: "Damege Value", name: "damageValue", type: "number" },
           { label: "Loan Fee", name: "loanFee", type: "number" },
           { label: "Delay Penalty", name: "penaltyForDelay", type: "number" },
         ].map(({ label, name, type }) => (

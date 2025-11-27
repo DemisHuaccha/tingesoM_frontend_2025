@@ -6,32 +6,34 @@ export const CardexListComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const itemsPerPage = 8  ;
+  const [toolId, setToolId] = useState("");
+  const itemsPerPage = 8;
 
   useEffect(() => {
-    loadAllCardex();
+    loadAllCardex(null, null, null);
   }, []);
 
-  const loadAllCardex = async () => {
-      const response = await listForTime(null, null);
+  const loadAllCardex = async (start, end, idTool) => {
+    try {
+      const response = await listForTime(start, end, idTool);
       setCardexList(response.data);
+    } catch (error) {
+      console.error("Error loading cardex:", error);
+    }
   };
 
   const handleFilter = async (e) => {
     e.preventDefault();
-
-      const response = await listForTime(
-        startDate || null,
-        endDate || null
-      );
-      setCardexList(response.data);
-      setCurrentPage(1);
+    const parsedToolId = toolId !== "" ? Number(toolId) : null;
+    await loadAllCardex(startDate || null, endDate || null, parsedToolId);
+    setCurrentPage(1);
   };
 
   const handleClear = () => {
     setStartDate("");
     setEndDate("");
-    loadAllCardex();
+    setToolId("");
+    loadAllCardex(null, null, null);
   };
 
   const totalPages = Math.ceil(cardexList.length / itemsPerPage);
@@ -44,18 +46,34 @@ export const CardexListComponent = () => {
 
       <form className="row g-3 mb-4" onSubmit={handleFilter}>
         <div className="col-md-4">
-          <label className="form-label">Start Date</label>
+          <label htmlFor="toolId" className="form-label">Tool Id</label>
+          <input
+            type="number"
+            id="toolId"
+            name="toolId"
+            className="form-control"
+            placeholder='Enter Tool Id'
+            value={toolId}
+            onChange={(e) => setToolId(e.target.value)}
+          />
+        </div>
+        <div className="col-md-4">
+          <label htmlFor="startDate" className="form-label">Start Date</label>
           <input
             type="date"
+            id="startDate"
+            name="startDate"
             className="form-control"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
         <div className="col-md-4">
-          <label className="form-label">End Date</label>
+          <label htmlFor="endDate" className="form-label">End Date</label>
           <input
             type="date"
+            id="endDate"
+            name="endDate"
             className="form-control"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
@@ -67,13 +85,12 @@ export const CardexListComponent = () => {
           </button>
         </div>
         <div className="col-md-2 d-flex align-items-end">
-          <button type="button" className="btn btn-outline-secondary w-5000" onClick={handleClear}>
+          <button type="button" className="btn btn-outline-secondary w-100" onClick={handleClear}>
             Reset
           </button>
         </div>
       </form>
 
-  
       <table className="table table-striped table-bordered">
         <thead>
           <tr>
@@ -113,7 +130,7 @@ export const CardexListComponent = () => {
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          ← Previus Page
+          ← Previous Page
         </button>
 
         <span>Page {currentPage} of {totalPages}</span>
