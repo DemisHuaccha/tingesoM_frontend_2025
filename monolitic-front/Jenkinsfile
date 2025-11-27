@@ -48,8 +48,7 @@ pipeline {
             steps {
                 script {
                     runCmd("""
-                        cd monolitic-front && docker compose down
-                        cd monolitic-front && docker compose up -d --build
+                        cd monolitic-front && docker compose down && docker compose up -d --build
                     """)
                 }
             }
