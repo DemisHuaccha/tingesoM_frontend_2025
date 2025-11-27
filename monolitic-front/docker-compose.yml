@@ -4,7 +4,7 @@ services:
     container_name: tingeso-m-frontend
     image: demishuaccha/tingeso-m-frontend:latest
     ports:
-      - "8070:8070"
+      - "8070:80"
     deploy:
       restart_policy:
         condition: on-failure

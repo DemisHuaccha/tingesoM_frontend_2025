@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "demishuaccha/frontend"
+        IMAGE_NAME = "demishuaccha/tingeso-m-frontend"
         IMAGE_TAG  = "latest"
     }
 
@@ -48,7 +48,10 @@ pipeline {
             steps {
                 script {
                     runCmd("""
-                        cd monolitic-front && docker compose down && docker compose up -d --build
+                        cd monolitic-front && \
+                        docker compose down && \
+                        docker compose pull && \
+                        docker compose up -d
                     """)
                 }
             }
@@ -69,5 +72,3 @@ def runCmd(cmd) {
         bat cmd
     }
 }
-
-
