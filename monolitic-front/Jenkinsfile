@@ -14,11 +14,23 @@ pipeline {
             }
         }
 
+        stage('Build Frontend') {
+            steps {
+                script {
+                    runCmd("""
+                        cd monolitic-front
+                        npm install
+                        npm run build
+                    """)
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
                     runCmd("""
-                        docker build -t demishuaccha/frontend:latest -f monolitic-front/Dockerfile monolitic-front
+                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f monolitic-front/Dockerfile monolitic-front
                     """)
                 }
             }
@@ -60,4 +72,5 @@ def runCmd(cmd) {
         bat cmd
     }
 }
+
 
