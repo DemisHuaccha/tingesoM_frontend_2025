@@ -1,34 +1,41 @@
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from '@mui/material';
 
 const GroupedToolTable = ({ groupedTools }) => (
-  <table className="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Condition</th>
-        <th>Loan Fee</th>
-        <th>Penalty</th>
-        <th>Replacement Value</th>
-        <th>Damage Value</th>
-        <th>Stock</th>
-      </tr>
-    </thead>
-    <tbody>
+  <Table aria-label="grouped tool table">
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Name</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Category</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Condition</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Loan Fee</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Penalty</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Replacement Value</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Damage Value</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Stock</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
       {groupedTools.map((group, index) => (
-        <tr key={index}>
-          <td>{group.name}</td>
-          <td>{group.category}</td>
-          <td>{group.initialCondition}</td>
-          <td>{group.loanFee}</td>
-          <td>{group.penaltyForDelay}</td>
-          <td>{group.replacementValue}</td>
-          <td>{group.damageValue}</td>
-          <td>{group.stock}</td>
-        </tr>
+        <TableRow key={index} hover>
+          <TableCell>{group.name}</TableCell>
+          <TableCell>{group.category}</TableCell>
+          <TableCell>{group.initialCondition}</TableCell>
+          <TableCell>{group.loanFee}</TableCell>
+          <TableCell>{group.penaltyForDelay}</TableCell>
+          <TableCell>{group.replacementValue}</TableCell>
+          <TableCell>{group.damageValue}</TableCell>
+          <TableCell>{group.stock}</TableCell>
+        </TableRow>
       ))}
-    </tbody>
-  </table>
+    </TableBody>
+  </Table>
 );
 
 export default GroupedToolTable;

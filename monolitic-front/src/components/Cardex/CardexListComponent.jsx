@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { listForTime } from "../../services/CardexService";
+import {
+  Container,
+  Paper,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Box,
+  Pagination,
+  Stack,
+  Grid,
+  TextField
+} from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 export const CardexListComponent = () => {
   const [cardexList, setCardexList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [toolId, setToolId] = useState("");
   const itemsPerPage = 8;
 
@@ -25,15 +44,24 @@ export const CardexListComponent = () => {
   const handleFilter = async (e) => {
     e.preventDefault();
     const parsedToolId = toolId !== "" ? Number(toolId) : null;
-    await loadAllCardex(startDate || null, endDate || null, parsedToolId);
+
+    // Dates are already strings in YYYY-MM-DD format from input type="date"
+    const formattedStart = startDate || null;
+    const formattedEnd = endDate || null;
+
+    await loadAllCardex(formattedStart, formattedEnd, parsedToolId);
     setCurrentPage(1);
   };
 
   const handleClear = () => {
-    setStartDate("");
-    setEndDate("");
+    setStartDate('');
+    setEndDate('');
     setToolId("");
     loadAllCardex(null, null, null);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const totalPages = Math.ceil(cardexList.length / itemsPerPage);
@@ -41,109 +69,134 @@ export const CardexListComponent = () => {
   const currentCardex = cardexList.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="container">
-      <h2 className="text-center">Kardex</h2>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 3 }}>
+        Kardex
+      </Typography>
 
-      <form className="row g-3 mb-4" onSubmit={handleFilter}>
-        <div className="col-md-4">
-          <label htmlFor="toolId" className="form-label">Tool Id</label>
-          <input
-            type="number"
-            id="toolId"
-            name="toolId"
-            className="form-control"
-            placeholder='Enter Tool Id'
-            value={toolId}
-            onChange={(e) => setToolId(e.target.value)}
-          />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="startDate" className="form-label">Start Date</label>
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            className="form-control"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="endDate" className="form-label">End Date</label>
-          <input
-            type="date"
-            id="endDate"
-            name="endDate"
-            className="form-control"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-        <div className="col-md-2 d-flex align-items-end">
-          <button type="submit" className="btn btn-primary w-100">
-            Filter
-          </button>
-        </div>
-        <div className="col-md-2 d-flex align-items-end">
-          <button type="button" className="btn btn-outline-secondary w-100" onClick={handleClear}>
-            Reset
-          </button>
-        </div>
-      </form>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+        <form onSubmit={handleFilter}>
+          <Grid container spacing={2} alignItems="flex-end">
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <TextField
+                fullWidth
+                label="Tool ID"
+                type="number"
+                variant="outlined"
+                value={toolId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "" || (Number(val) >= 0 && !val.includes("-"))) {
+                    setToolId(val);
+                  }
+                }}
+                size="small"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <TextField
+                fullWidth
+                label="Start Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                size="small"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <TextField
+                fullWidth
+                label="End Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                size="small"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <Box display="flex" gap={1}>
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<FilterListIcon />}
+                >
+                  Filter
+                </Button>
+                <Button
+                  fullWidth
+                  type="button"
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<RestartAltIcon />}
+                  onClick={handleClear}
+                >
+                  Reset
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
 
-      <table className="table table-striped table-bordered">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Date Move</th>
-            <th>Type Move</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Amount</th>
-            <th>Email User</th>
-            <th>ID Tool</th>
-            <th>ID Loan</th>
-            <th>Client Rut</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentCardex.map((entry) => (
-            <tr key={entry.id}>
-              <td>{entry.id}</td>
-              <td>{entry.moveDate}</td>
-              <td>{entry.typeMove}</td>
-              <td>{entry.description}</td>
-              <td>{entry.quantity}</td>
-              <td>{entry.amount}</td>
-              <td>{entry.userEmail}</td>
-              <td>{entry.toolId}</td>
-              <td>{entry.loanId}</td>
-              <td>{entry.clientRut}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Paper elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+        <TableContainer>
+          <Table stickyHeader aria-label="cardex table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Date Move</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Type Move</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Description</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Quantity</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Amount</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Email User</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>ID Tool</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>ID Loan</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Client Rut</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {currentCardex.map((entry) => (
+                <TableRow key={entry.id} hover>
+                  <TableCell>{entry.id}</TableCell>
+                  <TableCell>{entry.moveDate}</TableCell>
+                  <TableCell>{entry.typeMove}</TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.quantity}</TableCell>
+                  <TableCell>{entry.amount}</TableCell>
+                  <TableCell>{entry.userEmail}</TableCell>
+                  <TableCell>{entry.toolId}</TableCell>
+                  <TableCell>{entry.loanId}</TableCell>
+                  <TableCell>{entry.clientRut}</TableCell>
+                </TableRow>
+              ))}
+              {currentCardex.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={10} align="center">No records found</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <button
-          className="btn btn-secondary"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          ← Previous Page
-        </button>
-
-        <span>Page {currentPage} of {totalPages}</span>
-
-        <button
-          className="btn btn-secondary"
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Next Page →
-        </button>
-      </div>
-    </div>
+        <Box display="flex" justifyContent="center" p={3}>
+          <Stack spacing={2}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Stack>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

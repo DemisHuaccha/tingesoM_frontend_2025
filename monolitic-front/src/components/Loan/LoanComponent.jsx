@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { createLoan } from '../../services/LoanService';
-import { searchCustomerRuts } from '../../services/CustomerService';
+import { searchClientRuts } from '../../services/ClientService';
+import { getToolById, searchTools } from '../../services/ToolService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useKeycloak } from '@react-keycloak/web';
@@ -11,37 +12,93 @@ const LoanComponent = () => {
   const [returnDate, setReturnDate] = useState(null);
   const [rutClient, setRutClient] = useState('');
   const navigator = useNavigate();
+  const location = useLocation();
   const { keycloak } = useKeycloak();
   const userEmail = keycloak?.tokenParsed?.email || '';
-  const { idTool } = useParams();
+  const { idTool: paramIdTool } = useParams();
+
+  // Si viene del estado (desde ListTools), usamos esos datos
+  const initialTool = location.state?.tool || null;
+
+  const [toolId, setToolId] = useState(paramIdTool || '');
+  const [toolName, setToolName] = useState(initialTool?.name || '');
+  const [toolCategory, setToolCategory] = useState(initialTool?.category || '');
+  const [toolFee, setToolFee] = useState(initialTool?.loanFee || '');
+
   const [suggestions, setSuggestions] = useState([]);
 
-  const handleRutChange = async (e) => {
-  const value = e.target.value;
-  setRutClient(value);
+  useEffect(() => {
+    // Si tenemos ID por parámetro pero no tenemos los detalles (ej: recarga de página o acceso directo), buscamos
+    if (paramIdTool && !initialTool) {
+      fetchToolDetails(paramIdTool);
+    }
+  }, [paramIdTool, initialTool]);
 
-  if (value.length > 1) {
+  const fetchToolDetails = async (id) => {
     try {
-      const response = await searchCustomerRuts(value);
-      //console.log("Sugerencias recibidas:", response.data);
-
-      const data = Array.isArray(response.data) ? response.data : [];
-      setSuggestions(data);
+      const response = await getToolById(id);
+      const tool = response.data;
+      setToolName(tool.name);
+      setToolCategory(tool.category);
+      setToolFee(tool.loanFee);
     } catch (error) {
-      console.error("Error with RUTs:", error);
+      console.error("Error fetching tool details:", error);
+      setToolName('');
+      setToolCategory('');
+      setToolFee('');
+    }
+  };
+
+  const [toolSuggestions, setToolSuggestions] = useState([]);
+
+  const handleToolIdChange = async (e) => {
+    const id = e.target.value;
+    setToolId(id);
+
+    if (id.length > 0) {
+      try {
+        const response = await searchTools(id);
+        const data = Array.isArray(response.data) ? response.data : [];
+        setToolSuggestions(data);
+      } catch (error) {
+        console.error("Error searching tools:", error);
+        setToolSuggestions([]);
+      }
+    } else {
+      setToolSuggestions([]);
+    }
+
+    if (id) {
+      fetchToolDetails(id);
+    } else {
+      setToolName('');
+      setToolCategory('');
+      setToolFee('');
+    }
+  };
+
+  const handleRutChange = async (e) => {
+    const value = e.target.value;
+    setRutClient(value);
+
+    if (value.length > 1) {
+      try {
+        const response = await searchClientRuts(value);
+        const data = Array.isArray(response.data) ? response.data : [];
+        setSuggestions(data);
+      } catch (error) {
+        console.error("Error with RUTs:", error);
+        setSuggestions([]);
+      }
+    } else {
       setSuggestions([]);
     }
-  } else {
-    setSuggestions([]);
-  }
-};
-
-  
+  };
 
   const saveLoan = async (e) => {
     e.preventDefault();
 
-    if (!deliveryDate || !returnDate || !rutClient.trim()) {
+    if (!deliveryDate || !returnDate || !rutClient.trim() || !toolId) {
       alert('Please fill in all fields correctly.');
       return;
     }
@@ -51,7 +108,7 @@ const LoanComponent = () => {
       returnDate: returnDate.toISOString().split('T')[0],
       clientRut: rutClient.trim(),
       loanStatus: true,
-      toolId: idTool,
+      toolId: toolId,
       email: userEmail,
     };
 
@@ -105,14 +162,65 @@ const LoanComponent = () => {
                 <label className='form-label fw-bold'>Tool ID</label>
                 <input
                   type='text'
-                  value={idTool}
+                  value={toolId}
+                  className='form-control'
+                  onChange={handleToolIdChange}
+                  disabled={!!paramIdTool}
+                  placeholder="Enter Tool ID"
+                  required
+                />
+                {toolSuggestions.length > 0 && (
+                  <ul className="list-group mt-1">
+                    {toolSuggestions.map((tool) => (
+                      <li
+                        key={tool.idTool}
+                        className="list-group-item list-group-item-action"
+                        onClick={() => {
+                          setToolId(tool.idTool.toString());
+                          setToolSuggestions([]);
+                          fetchToolDetails(tool.idTool.toString());
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {tool.idTool} - {tool.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className='form-group mb-3'>
+                <label className='form-label'>Tool Name</label>
+                <input
+                  type='text'
+                  value={toolName}
                   className='form-control'
                   disabled
                 />
               </div>
 
               <div className='form-group mb-3'>
-                
+                <label className='form-label'>Category</label>
+                <input
+                  type='text'
+                  value={toolCategory}
+                  className='form-control'
+                  disabled
+                />
+              </div>
+
+              <div className='form-group mb-3'>
+                <label className='form-label'>Loan Fee</label>
+                <input
+                  type='text'
+                  value={toolFee}
+                  className='form-control'
+                  disabled
+                />
+              </div>
+
+              <div className='form-group mb-3'>
+                <label className='form-label'>Delivery Date</label>
                 <DatePicker
                   selected={deliveryDate}
                   onChange={(date) => setDeliveryDate(date)}
@@ -124,7 +232,7 @@ const LoanComponent = () => {
               </div>
 
               <div className='form-group mb-3'>
-                
+                <label className='form-label'>Return Date</label>
                 <DatePicker
                   selected={returnDate}
                   onChange={(date) => setReturnDate(date)}

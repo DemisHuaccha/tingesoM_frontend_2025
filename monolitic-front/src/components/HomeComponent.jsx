@@ -1,37 +1,37 @@
 import React from 'react'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const HomeComponent= () => {
+const HomeComponent = () => {
 
-    const navigator = useNavigate();
+  const navigator = useNavigate();
 
-    const ListTools = () => {
+  const ListTools = () => {
     navigator('/ListTools')
   }
 
-    const ListCustomer = () => {
-    navigator('/ListCustomers')
+  const ListClient = () => {
+    navigator('/ListClients')
   }
 
-    const ListToolsAdmin = () => {
-      navigator('/ListToolsAdmin')
-    }
+  const ListToolsAdmin = () => {
+    navigator('/ListToolsAdmin')
+  }
 
-    const ListLoan = () => {
-      navigator('/ListLoan')
-    }
+  const ListLoan = () => {
+    navigator('/ListLoan')
+  }
 
   return (
-    <div style={{ textAlign: 'center' , marginTop: '40px'}}>
+    <div style={{ textAlign: 'center', marginTop: '40px' }}>
       <h1>Bienvenido a ToolRent 🛠️</h1>
       <div style={{ marginTop: '40px' }}>
         <button onClick={ListTools} style={{ marginRight: '10px' }}>
           Tools
         </button>
-        <button onClick={ListCustomer} style={{ marginRight: '10px'}}>
-          Customer
+        <button onClick={ListClient} style={{ marginRight: '10px' }}>
+          Client
         </button>
-        <button onClick={ListLoan} style= {{ marginRight: '10px'}}>
+        <button onClick={ListLoan} style={{ marginRight: '10px' }}>
           Loan List
         </button>
       </div>

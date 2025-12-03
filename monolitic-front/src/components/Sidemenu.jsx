@@ -14,6 +14,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import PersonIcon from '@mui/icons-material/Person'
 import BookIcon from '@mui/icons-material/Book';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export default function Sidemenu({ open, toggleDrawer }) {
   const navigate = useNavigate();
@@ -40,49 +41,58 @@ export default function Sidemenu({ open, toggleDrawer }) {
           <ListItemText primary="Tools" />
         </ListItemButton>
 
-         <Divider />
+        <Divider />
 
-        <ListItemButton onClick={() => navigate("/ListCustomers")}>
+        <ListItemButton onClick={() => navigate("/ListClients")}>
           <ListItemIcon>
-            <PeopleAltIcon/>
+            <PeopleAltIcon />
           </ListItemIcon>
-          <ListItemText primary="Clients"/>
+          <ListItemText primary="Clients" />
         </ListItemButton>
 
-          <Divider />
+        <Divider />
 
         <ListItemButton onClick={() => navigate("/ListLoan")}>
           <ListItemIcon>
-            <AttachMoneyIcon/>
+            <AttachMoneyIcon />
           </ListItemIcon>
-          <ListItemText primary="Loans"/>
+          <ListItemText primary="Loans" />
         </ListItemButton>
 
-          <Divider />
+        <Divider />
 
         <ListItemButton onClick={() => navigate("/UpdateUser")}>
           <ListItemIcon>
-            <PersonIcon/>
+            <PersonIcon />
           </ListItemIcon>
-          <ListItemText primary="Edit Profile"/>
+          <ListItemText primary="Edit Profile" />
         </ListItemButton>
 
-          <Divider />
+        <Divider />
 
         <ListItemButton onClick={() => navigate("/Cardex")}>
           <ListItemIcon>
-            <BookIcon/>
+            <BookIcon />
           </ListItemIcon>
-          <ListItemText primary="Kardex"/>
+          <ListItemText primary="Kardex" />
         </ListItemButton>
 
-          <Divider />
+        <Divider />
 
         <ListItemButton onClick={() => navigate("/Ranking")}>
           <ListItemIcon>
-            <EmojiEventsIcon/>
+            <EmojiEventsIcon />
           </ListItemIcon>
-          <ListItemText primary="Ranking"/>
+          <ListItemText primary="Ranking" />
+        </ListItemButton>
+
+        <Divider />
+
+        <ListItemButton onClick={() => navigate("/reports")}>
+          <ListItemIcon>
+            <AssessmentIcon />
+          </ListItemIcon>
+          <ListItemText primary="Reports" />
         </ListItemButton>
 
       </List>

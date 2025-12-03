@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {  filterTool, updateStatusTool, underRepairTool, deleteTool, gruopTools } from "../../services/ToolService";
+import { filterTool, updateStatusTool, underRepairTool, deleteTool, gruopTools } from "../../services/ToolService";
 import { useNavigate } from 'react-router-dom';
 import { useKeycloak } from "@react-keycloak/web";
 import ToolTable from "./ToolTable";
 import GroupedToolTable from "./GroupToolTable";
+import {
+  Container,
+  Paper,
+  Typography,
+  Button,
+  Grid,
+  TextField,
+  Box,
+  Pagination,
+  Stack,
+  TableContainer
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 export const ListToolComponent = () => {
   const [tools, setTools] = useState([]);
@@ -67,13 +82,14 @@ export const ListToolComponent = () => {
           alert("Only ADMIN users can delete tools.");
           return;
         }
-        await deleteTool(dto);}
+        await deleteTool(dto);
+      }
       applyFilter();
     } catch (error) {
       console.error(`Error in the update ${field}:`, error);
     }
   };
-  
+
 
   const handleGroupToolsToggle = () => {
     if (!hasRole("ADMIN") && !hasRole("USER")) {
@@ -106,7 +122,7 @@ export const ListToolComponent = () => {
     navigator(`/updateTool/${tool.idTool}`, { state: { tool } });
   };
 
-   const navigateToLoan = (tool) => {
+  const navigateToLoan = (tool) => {
     if (!hasRole("ADMIN") && !hasRole("USER")) {
       alert("No authorization.");
       return;
@@ -115,108 +131,117 @@ export const ListToolComponent = () => {
   };
 
   const handleClear = () => {
-  setFilters({ nameTool: "", categoryTool: "", feeTool: "" });
+    setFilters({ nameTool: "", categoryTool: "", feeTool: "" });
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const totalPages = Math.ceil(tools.length / itemsPerPage);
   const currentTools = tools.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="container mt-3">
-      <h2 className="text-center">List of Tools</h2>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 3 }}>
+        List of Tools
+      </Typography>
 
-      <div className="d-flex justify-content-between align-items-start flex-wrap mb-2">
-        <div className="d-flex justify-content-end mb-3">
-          <button className="btn btn-primary mx-2" onClick={handleGroupToolsToggle}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<GroupWorkIcon />}
+            onClick={handleGroupToolsToggle}
+            sx={{ mr: 2 }}
+          >
             {showGrouped ? "Show All Tools" : "Group Tools"}
-          </button>
-          <button className="btn btn-primary" onClick={addNewTool}>
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<AddIcon />}
+            onClick={addNewTool}
+          >
             Add Tool
-          </button>
-        </div>
+          </Button>
+        </Box>
 
         {!showGrouped && (
-          <div className="d-flex justify-content-end mb-3">
-            <input
-              type="text"
-              className="form-control mx-2"
-              placeholder="Name"
-              value={filters.nameTool}
-              onChange={(e) => setFilters({ ...filters, nameTool: e.target.value })}
-            />
-            <input
-              type="text"
-              className="form-control mx-2"
-              placeholder="Category"
-              value={filters.categoryTool}
-              onChange={(e) => setFilters({ ...filters, categoryTool: e.target.value })}
-            />
-            <input
-              type="number"
-              className="form-control mx-2"
-              placeholder="Fee"
-              value={filters.feeTool}
-              onChange={(e) => setFilters({ ...filters, feeTool: e.target.value })}
-            />
-
-            <div className="col-md-2 d-flex align-items-end">
-          <button type="button" className="btn btn-outline-secondary w-5000" onClick={handleClear}>
-            Reset
-          </button>
-        </div>
-          </div>
+          <Paper elevation={1} sx={{ p: 2, borderRadius: 2 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid>
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  size="small"
+                  value={filters.nameTool}
+                  onChange={(e) => setFilters({ ...filters, nameTool: e.target.value })}
+                />
+              </Grid>
+              <Grid>
+                <TextField
+                  label="Category"
+                  variant="outlined"
+                  size="small"
+                  value={filters.categoryTool}
+                  onChange={(e) => setFilters({ ...filters, categoryTool: e.target.value })}
+                />
+              </Grid>
+              <Grid>
+                <TextField
+                  label="Fee"
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  value={filters.feeTool}
+                  onChange={(e) => setFilters({ ...filters, feeTool: e.target.value })}
+                />
+              </Grid>
+              <Grid>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<RestartAltIcon />}
+                  onClick={handleClear}
+                >
+                  Reset
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
         )}
-      </div>
+      </Box>
 
-      {showGrouped ? 
-      ( <>
-        <GroupedToolTable groupedTools={groupedTools} />
-        <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-secondary"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              ← Previous Page
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next Page →
-            </button>
-          </div>
-      </>   
-      ) : (
-        <>
-          <ToolTable
-            tools={currentTools}
-            onStatusChange={handleStatusChange}
-            onLoan={navigateToLoan}
-            onUpdate={navigateToUpdateTool}
-          />
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-secondary"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              ← Previous Page
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next Page →
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+      <Paper elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+        <TableContainer>
+          {showGrouped ? (
+            <GroupedToolTable groupedTools={groupedTools} />
+          ) : (
+            <ToolTable
+              tools={currentTools}
+              onStatusChange={handleStatusChange}
+              onLoan={navigateToLoan}
+              onUpdate={navigateToUpdateTool}
+            />
+          )}
+        </TableContainer>
+
+        <Box display="flex" justifyContent="center" p={3}>
+          <Stack spacing={2}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Stack>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

@@ -1,49 +1,89 @@
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  Stack
+} from '@mui/material';
 
 const ToolTable = ({ tools, onStatusChange, onLoan, onUpdate }) => (
-  <table className="table table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>Loan</th>
-        <th>Tool id</th>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Replacement Value</th>
-        <th>Damage Value</th>
-        <th>Loan Fee</th>
-        <th>Penalty</th>
-        <th>Condition</th>
-        <th>Status</th>
-        <th>Repair</th>
-        <th>Delete</th>
-
-      </tr>
-    </thead>
-    <tbody>
+  <Table aria-label="tool table">
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Actions</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>ID</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Name</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Category</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Value</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Damage</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Fee</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Penalty</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Condition</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Status</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Repair</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Delete</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Manage</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
       {tools.map((tool) => (
-        <tr key={tool.idTool}>
-          <td>
-            <button className="btn btn-warning btn-sm" onClick={() => onLoan(tool)}>Make Loan</button>
-          </td>
-          <td>{tool.idTool}</td>
-          <td>{tool.name}</td>
-          <td>{tool.category}</td>
-          <td>{tool.replacementValue}</td>
-          <td>{tool.damageValue}</td>
-          <td>{tool.loanFee}</td>
-          <td>{tool.penaltyForDelay}</td>
-          <td>{tool.initialCondition}</td>
-          <td>{tool.status ? "Available" : "Unavailable"}</td>
-          <td>{tool.underRepair ? "In Repair" : "Available"}</td>
-          <td>{tool.deleteStatus ? "Deleted" : "Available"}</td>
-          <td><button className="btn btn-danger btn-sm" onClick={() => onStatusChange(tool.idTool, "status", tool.status)}>Change Status</button></td>
-          <td><button className="btn btn-info btn-sm" onClick={() => onStatusChange(tool.idTool, "underRepair", tool.underRepair)}>Repair</button></td>
-          <td><button className="btn btn-dark btn-sm" onClick={() => onStatusChange(tool.idTool, "deleteStatus", tool.deleteStatus)}>Delete</button></td>
-          <td><button className="btn btn-warning btn-sm" onClick={() => onUpdate(tool)}>Update</button></td>
-        </tr>
+        <TableRow key={tool.idTool} hover>
+          <TableCell>
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              onClick={() => onLoan(tool)}
+              sx={{ minWidth: '100px' }}
+            >
+              Make Loan
+            </Button>
+          </TableCell>
+          <TableCell>{tool.idTool}</TableCell>
+          <TableCell>{tool.name}</TableCell>
+          <TableCell>{tool.category}</TableCell>
+          <TableCell>{tool.replacementValue}</TableCell>
+          <TableCell>{tool.damageValue}</TableCell>
+          <TableCell>{tool.loanFee}</TableCell>
+          <TableCell>{tool.penaltyForDelay}</TableCell>
+          <TableCell>{tool.initialCondition}</TableCell>
+          <TableCell>
+            <Chip
+              label={tool.status ? "Available" : "Unavailable"}
+              color={tool.status ? "success" : "default"}
+              size="small"
+            />
+          </TableCell>
+          <TableCell>
+            <Chip
+              label={tool.underRepair ? "In Repair" : "Available"}
+              color={tool.underRepair ? "warning" : "success"}
+              size="small"
+            />
+          </TableCell>
+          <TableCell>
+            <Chip
+              label={tool.deleteStatus ? "Deleted" : "Available"}
+              color={tool.deleteStatus ? "error" : "success"}
+              size="small"
+            />
+          </TableCell>
+          <TableCell>
+            <Stack direction="column" spacing={1}>
+              <Button variant="outlined" color="warning" size="small" onClick={() => onStatusChange(tool.idTool, "status", tool.status)}>Status</Button>
+              <Button variant="outlined" color="info" size="small" onClick={() => onStatusChange(tool.idTool, "underRepair", tool.underRepair)}>Repair</Button>
+              <Button variant="outlined" color="error" size="small" onClick={() => onStatusChange(tool.idTool, "deleteStatus", tool.deleteStatus)}>Delete</Button>
+              <Button variant="contained" color="primary" size="small" onClick={() => onUpdate(tool)}>Update</Button>
+            </Stack>
+          </TableCell>
+        </TableRow>
       ))}
-    </tbody>
-  </table>
+    </TableBody>
+  </Table>
 );
 
 export default ToolTable;
